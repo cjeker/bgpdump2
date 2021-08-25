@@ -25,6 +25,7 @@
 #include <sys/queue.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <time.h>
 
 #include "ptree.h"
 #include "bgpdump_parse.h"
