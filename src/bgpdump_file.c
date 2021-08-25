@@ -48,12 +48,12 @@ fread_wrap (void *ptr, size_t size, size_t nitems, void *file)
   size_t ret;
   FILE *f = (FILE *) file;
   ret = fread (ptr, size, nitems, f);
-  if (ferror (file))
+  if (ferror (f))
     {
       fprintf (stderr, "fread error.\n");
       return 0;
     }
-  if (feof (file) && !ret)
+  if (feof (f) && !ret)
     return 0;
 
   if (debug) {
