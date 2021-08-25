@@ -17,6 +17,7 @@
 #include <sys/ioctl.h>
 #include <sys/uio.h>
 #include <sys/queue.h>
+#include <sys/socket.h>
 #include <time.h>
 
 #include <sys/stat.h>
