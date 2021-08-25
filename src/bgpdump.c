@@ -569,7 +569,7 @@ main (int argc, char **argv)
           datalen += ret;
 
           /* end of file. */
-          if (ret == 0 && method->feof (file))
+          if (ret == 0 && method->feof_func (file))
             {
               if (debug)
                 printf ("read: end-of-file.\n");

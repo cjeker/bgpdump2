@@ -39,7 +39,7 @@ struct access_method
   fread_t fread;
   fwrite_t fwrite;
   fclose_t fclose;
-  feof_t feof;
+  feof_t feof_func;
 };
 
 struct fhandle
