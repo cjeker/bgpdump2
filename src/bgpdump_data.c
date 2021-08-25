@@ -156,7 +156,7 @@ bgpdump_table_v2_peer_entry (int index, char *p, char *data_end, int *retsize)
     {
       size = sizeof (peer_as_4byte);
       BUFFER_OVERRUN_CHECK(p, size, data_end)
-      peer_as_4byte = ntohl (*(uint32_t *)p);
+      peer_as_4byte = ntohl (btoi32(p));
       p += size;
       total += size;
     }
@@ -164,7 +164,7 @@ bgpdump_table_v2_peer_entry (int index, char *p, char *data_end, int *retsize)
     {
       size = sizeof (peer_as_2byte);
       BUFFER_OVERRUN_CHECK(p, size, data_end)
-      peer_as_2byte = ntohs (*(uint16_t *)p);
+      peer_as_2byte = ntohs (btoi16(p));
       p += size;
       total += size;
     }
@@ -257,13 +257,13 @@ bgpdump_process_table_v2_peer_index_table (struct mrt_header *h,
   /* Collector BGP ID */
   size = sizeof (collector_bgp_id);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  collector_bgp_id.s_addr = *(uint32_t *)p;
+  collector_bgp_id.s_addr = btoi32(p);
   p += size;
 
   /* View Name Length */
   size = sizeof (view_name_length);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  view_name_length = ntohs (*(uint16_t *)p);
+  view_name_length = ntohs (btoi16(p));
   p += size;
 
   /* View Name */
@@ -275,7 +275,7 @@ bgpdump_process_table_v2_peer_index_table (struct mrt_header *h,
   /* Peer Count */
   size = sizeof (peer_count);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  peer_count = ntohs (*(uint16_t *)p);
+  peer_count = ntohs (btoi16(p));
   p += size;
 
   if (peer_table_only || (show && (debug || detail)))
@@ -402,7 +402,7 @@ bgpdump_process_bgp_attributes (struct bgp_route *route, char *start, char *end)
     {
       size = sizeof (attribute_type);
       BUFFER_OVERRUN_CHECK(p, size, end)
-      attribute_type = ntohs (*(uint16_t *)p);
+      attribute_type = ntohs (btoi16(p));
       p += size;
 
       snprintf (attr_flags, sizeof(attr_flags), "%s, %s, %s%s",
@@ -460,7 +460,7 @@ bgpdump_process_bgp_attributes (struct bgp_route *route, char *start, char *end)
         {
           size = 2;
           BUFFER_OVERRUN_CHECK(p, size, end)
-          attribute_length = ntohs (*(uint16_t *)p);
+          attribute_length = ntohs (btoi16(p));
           p += size;
         }
       else
@@ -494,7 +494,7 @@ bgpdump_process_bgp_attributes (struct bgp_route *route, char *start, char *end)
               route->path_size = path_size;
               for (i = 0; i < path_size; i++)
                 {
-                  uint32_t as_path = ntohl (*(uint32_t *) r);
+                  uint32_t as_path = ntohl (btoi32(r));
 
                   if (show && detail)
                     printf (" %lu", (unsigned long) as_path);
@@ -572,14 +572,14 @@ bgpdump_process_bgp_attributes (struct bgp_route *route, char *start, char *end)
 
         case LOCAL_PREF:
 	  route->localpref_set = 1;
-          route->localpref = ntohl (*(uint32_t *)p);
+          route->localpref = ntohl (btoi32(p));
           if (show && detail)
             printf ("    local-pref: %u\n", (uint32_t) route->localpref);
           break;
 
         case MULTI_EXIT_DISC:
 	  route->med_set = 1;
-          route->med = ntohl (*(uint32_t *)p);
+          route->med = ntohl (btoi32(p));
           if (show && detail)
             printf ("    med: %u\n", (uint32_t) route->med);
           break;
@@ -594,7 +594,7 @@ bgpdump_process_bgp_attributes (struct bgp_route *route, char *start, char *end)
 	    }
 
 	    for (idx = 0; idx < route->community_size; idx++) {
-	      route->community[idx] = ntohl (*(uint32_t *)(p+idx*4));
+	      route->community[idx] = ntohl (btoi32(p+idx*4));
 
 	      if (show && detail) {
 		printf ("%s %u:%u",
@@ -644,9 +644,9 @@ bgpdump_process_bgp_attributes (struct bgp_route *route, char *start, char *end)
 	    }
 
 	    for (idx = 0; idx < route->large_community_size; idx++) {
-	      route->large_community[idx].global = ntohl (*(uint32_t *)(p+idx*12));
-	      route->large_community[idx].local1 = ntohl (*(uint32_t *)(p+idx*12+4));
-	      route->large_community[idx].local2 = ntohl (*(uint32_t *)(p+idx*12+8));
+	      route->large_community[idx].global = ntohl (btoi32(p+idx*12));
+	      route->large_community[idx].local1 = ntohl (btoi32(p+idx*12+4));
+	      route->large_community[idx].local2 = ntohl (btoi32(p+idx*12+8));
 
 	      if (show && detail) {
 		printf ("%s %u:%u:%u",
@@ -671,7 +671,7 @@ bgpdump_process_bgp_attributes (struct bgp_route *route, char *start, char *end)
             char nlri_prefix[16];
 
             r = p;
-            afi = ntohs (*(unsigned short *)r);
+            afi = ntohs (btoi16(r));
             r += 2;
             safi = (unsigned char) *r;
             r++;
@@ -844,17 +844,17 @@ bgpdump_process_table_v2_rib_entry (int index, char **q,
 
   size = sizeof (peer_index);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  peer_index = ntohs (*(uint16_t *)p);
+  peer_index = ntohs (btoi16(p));
   p += size;
 
   size = sizeof (originated_time);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  originated_time = ntohl (*(uint32_t *)p);
+  originated_time = ntohl (btoi32(p));
   p += size;
 
   size = sizeof (attribute_length);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  attribute_length = ntohs (*(uint16_t *)p);
+  attribute_length = ntohs (btoi16(p));
   p += size;
 
   int peer_spec_i = 0;
@@ -1031,7 +1031,7 @@ bgpdump_process_table_v2_rib_unicast (struct mrt_header *h,
 
   size = sizeof (sequence_number);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  sequence_number = ntohl (*(uint32_t *)p);
+  sequence_number = ntohl (btoi32(p));
   p += size;
 
   size = sizeof (prefix_length);
@@ -1048,7 +1048,7 @@ bgpdump_process_table_v2_rib_unicast (struct mrt_header *h,
 
   size = sizeof (entry_count);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
-  entry_count = ntohs (*(uint16_t *)p);
+  entry_count = ntohs (btoi16(p));
   p += size;
 
   if (show && debug)

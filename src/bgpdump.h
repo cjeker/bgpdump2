@@ -35,5 +35,21 @@ extern int safi;
 extern int qaf;
 #define MAX_ADDR_LENGTH 16
 
+static inline int16_t
+btoi16(char *p)
+{
+	int16_t x;
+	memcpy(&x, p, sizeof(x));
+	return x;
+}
+
+static inline int32_t
+btoi32(char *p)
+{
+	int32_t x;
+	memcpy(&x, p, sizeof(x));
+	return x;
+}
+
 #endif /*_BGPDUMP_H_*/
 
