@@ -7,8 +7,7 @@ AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/bgpdump.c])
 AC_CONFIG_HEADERS([config.h])
 
-CFLAGS="-g -O3 -Wall"
-defcflags=$CFLAGS;
+defcflags="$CFLAGS -g -O3 -Wall"
 AC_ARG_WITH([cflags],
   [AS_HELP_STRING([--with-cflags],
    [set CFLAGS environment for compilation. @<:@[default=$defcflags]@:>@])],
