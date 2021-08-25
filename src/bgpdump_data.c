@@ -56,7 +56,7 @@ uint32_t mrt_length;
 uint32_t sequence_number;
 uint16_t peer_index;
 char prefix[16];
-uint8_t prefix_length;
+static uint8_t prefix_length;
 uint32_t path_id = 0;
 
 void
