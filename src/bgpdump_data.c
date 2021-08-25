@@ -239,7 +239,7 @@ bgpdump_table_v2_peer_entry (int index, char *p, char *data_end, int *retsize)
 }
 
 void
-bgpdump_process_table_v2_peer_index_table (struct mrt_header *h,
+bgpdump_process_table_v2_peer_index_table (char *data_start,
                                            struct mrt_info *info,
                                            char *data_end)
 {
@@ -252,7 +252,7 @@ bgpdump_process_table_v2_peer_index_table (struct mrt_header *h,
   uint16_t peer_count;
   char buf[64];
 
-  p = (char *)h + sizeof (struct mrt_header);
+  p = data_start + sizeof (struct mrt_header);
 
   /* Collector BGP ID */
   size = sizeof (collector_bgp_id);
@@ -1016,7 +1016,7 @@ bgpdump_process_table_v2_rib_entry (int index, char **q,
 }
 
 void
-bgpdump_process_table_v2_rib_unicast (struct mrt_header *h,
+bgpdump_process_table_v2_rib_unicast (char *data_start,
                                       struct mrt_info *info,
                                       char *data_end)
 {
@@ -1027,7 +1027,7 @@ bgpdump_process_table_v2_rib_unicast (struct mrt_header *h,
   uint32_t prefix_size;
   uint16_t entry_count;
 
-  p = (char *)h + sizeof (struct mrt_header);
+  p = data_start + sizeof (struct mrt_header);
 
   size = sizeof (sequence_number);
   BUFFER_OVERRUN_CHECK(p, size, data_end)
@@ -1218,26 +1218,26 @@ bgpdump_process_table_v2_rib_unicast (struct mrt_header *h,
 }
 
 void
-bgpdump_process_table_dump_v2 (struct mrt_header *h, struct mrt_info *info,
+bgpdump_process_table_dump_v2 (char *data_start, struct mrt_info *info,
                                char *data_end)
 {
   switch (info->subtype)
     {
     case BGPDUMP_TABLE_V2_PEER_INDEX_TABLE:
-      bgpdump_process_table_v2_peer_index_table (h, info, data_end);
+      bgpdump_process_table_v2_peer_index_table (data_start, info, data_end);
       break;
     case BGPDUMP_TABLE_V2_RIB_IPV4_UNICAST:
       if (! peer_table_only && qaf == AF_INET )
         {
           safi = AF_INET;
-          bgpdump_process_table_v2_rib_unicast (h, info, data_end);
+          bgpdump_process_table_v2_rib_unicast (data_start, info, data_end);
         }
       break;
     case BGPDUMP_TABLE_V2_RIB_IPV6_UNICAST:
       if (! peer_table_only && qaf == AF_INET6 )
         {
           safi = AF_INET6;
-          bgpdump_process_table_v2_rib_unicast (h, info, data_end);
+          bgpdump_process_table_v2_rib_unicast (data_start, info, data_end);
         }
       break;
     default:

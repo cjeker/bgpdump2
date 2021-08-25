@@ -76,7 +76,7 @@ void
 bgpdump_process_mrt_header (struct mrt_header *h, struct mrt_info *info);
 
 void
-bgpdump_process_table_dump_v2 (struct mrt_header *h, struct mrt_info *info,
+bgpdump_process_table_dump_v2 (char *data_start, struct mrt_info *info,
                                char *data_end);
 char *
 bgpdump_print_extd_comm (struct bgp_extd_comm *comm);

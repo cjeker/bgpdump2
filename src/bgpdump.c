@@ -69,7 +69,7 @@ void
 bgpdump_process (char *buf, size_t *data_len)
 {
   char *p;
-  struct mrt_header *h;
+  struct mrt_header h;
   int hsize = sizeof (struct mrt_header);
   char *data_end = buf + *data_len;
   unsigned long len;
@@ -79,8 +79,8 @@ bgpdump_process (char *buf, size_t *data_len)
     printf ("process %lu bytes.\n", *data_len);
 
   p = buf;
-  h = (struct mrt_header *) p;
-  len = ntohl (btoi32((char *)&h->length));
+  memcpy(&h, p, sizeof(h));
+  len = ntohl (h.length);
 
   if (debug)
     printf ("mrt message: length: %lu bytes.\n", len);
@@ -88,12 +88,12 @@ bgpdump_process (char *buf, size_t *data_len)
   /* Process as long as entire MRT message is in the buffer */
   while (len && p + hsize + len <= data_end)
     {
-      bgpdump_process_mrt_header (h, &info);
+      bgpdump_process_mrt_header (&h, &info);
 
       switch (mrt_type)
         {
         case BGPDUMP_TYPE_TABLE_DUMP_V2:
-          bgpdump_process_table_dump_v2 (h, &info, p + hsize + len);
+          bgpdump_process_table_dump_v2 (p, &info, p + hsize + len);
           break;
         default:
           printf ("Not supported: mrt type: %d\n", mrt_type);
@@ -106,8 +106,8 @@ bgpdump_process (char *buf, size_t *data_len)
       len = 0;
       if (p + hsize < data_end)
         {
-          h = (struct mrt_header *) p;
-          len = ntohl (btoi32((char *)&h->length));
+	  memcpy(&h, p, sizeof(h));
+          len = ntohl (h.length);
           if (debug)
             {
               printf ("next mrt message: length: %lu bytes.\n", len);
