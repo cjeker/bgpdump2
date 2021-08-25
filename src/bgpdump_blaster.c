@@ -805,7 +805,7 @@ timer_add (struct timer_ **ptimer, char *name, time_t sec, long nsec, void *data
 	timer->cb = cb;
 	timer->data = data;
 	timer_set_expire(timer, sec, nsec);
-	LOG(TIMER, "Reset %s timer, expire in %lu.%06lus\n", timer->name, sec, nsec/1000);
+	LOG(TIMER, "Reset %s timer, expire in %lld.%06lus\n", timer->name, (long long)sec, nsec/1000);
 	return;
     }
 
@@ -824,7 +824,7 @@ timer_add (struct timer_ **ptimer, char *name, time_t sec, long nsec, void *data
     timer_set_expire(timer, sec, nsec);
 
     CIRCLEQ_INSERT_TAIL(&timer_qhead, timer, timer_qnode);
-    LOG(TIMER, "Add %s timer, expire in %lu.%06lus\n", timer->name, sec, nsec/1000);
+    LOG(TIMER, "Add %s timer, expire in %lld.%06lus\n", timer->name, (long long)sec, nsec/1000);
 
     timer->ptimer = ptimer;
     *ptimer = timer;
@@ -881,8 +881,8 @@ timer_walk (void)
 
 	CIRCLEQ_FOREACH(timer, &timer_qhead, timer_qnode) {
 
-	    LOG(TIMER_DETAIL, "Checking %s timer, expire %lu.%lu\n",
-		timer->name, timer->expire.tv_sec, timer->expire.tv_nsec);
+	    LOG(TIMER_DETAIL, "Checking %s timer, expire %lld.%lu\n",
+		timer->name, (long long)timer->expire.tv_sec, timer->expire.tv_nsec);
 
 	    /*
 	     * Expired ?
@@ -951,8 +951,8 @@ timer_walk (void)
 	/*
 	 * Calculate the sleep timer.
 	 */
-	LOG(TIMER_DETAIL, "Now   %lu.%lu\n", now.tv_sec, now.tv_nsec);
-	LOG(TIMER_DETAIL, "Min   %lu.%lu\n", min.tv_sec, min.tv_nsec);
+	LOG(TIMER_DETAIL, "Now   %lld.%lu\n", (long long)now.tv_sec, now.tv_nsec);
+	LOG(TIMER_DETAIL, "Min   %lld.%lu\n", (long long)min.tv_sec, min.tv_nsec);
 
 	clock_gettime(CLOCK_MONOTONIC, &now);
 	if (timer_compare(&now, &min) == -1) {
@@ -971,7 +971,7 @@ timer_walk (void)
 	    sleep.tv_nsec = 20 * MSEC;
 	}
 
-	LOG(TIMER_DETAIL, "Sleep %lu.%lu\n", sleep.tv_sec, sleep.tv_nsec);
+	LOG(TIMER_DETAIL, "Sleep %lld.%lu\n", (long long)sleep.tv_sec, sleep.tv_nsec);
 	res = nanosleep(&sleep, &rem);
 	if (res == -1) {
 	    LOG(TIMER, "nanosleep(): error %s (%d)\n", strerror(errno), errno);
