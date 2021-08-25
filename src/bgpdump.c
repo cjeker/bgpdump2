@@ -80,7 +80,7 @@ bgpdump_process (char *buf, size_t *data_len)
 
   p = buf;
   h = (struct mrt_header *) p;
-  len = ntohl (h->length);
+  len = ntohl (btoi32((char *)&h->length));
 
   if (debug)
     printf ("mrt message: length: %lu bytes.\n", len);
@@ -107,7 +107,7 @@ bgpdump_process (char *buf, size_t *data_len)
       if (p + hsize < data_end)
         {
           h = (struct mrt_header *) p;
-          len = ntohl (h->length);
+          len = ntohl (btoi32((char *)&h->length));
           if (debug)
             {
               printf ("next mrt message: length: %lu bytes.\n", len);
