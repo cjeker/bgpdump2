@@ -798,7 +798,7 @@ bgpdump_add_prefix (struct bgp_route *route, int index, char *raw_path, uint16_t
       peer_table[index].path_count++;
     }
     bgp_path->path_length = path_length;
-    CIRCLEQ_INIT(&bgp_path->path_qhead);
+    TAILQ_INIT(&bgp_path->path_qhead);
     bgp_path->path_id = path_id;
     path_id++;
   } else {
@@ -824,7 +824,7 @@ bgpdump_add_prefix (struct bgp_route *route, int index, char *raw_path, uint16_t
       peer_table[index].ipv6_count++;
     }
   }
-  CIRCLEQ_INSERT_TAIL(&bgp_path->path_qhead, bgp_prefix, prefix_qnode);
+  TAILQ_INSERT_TAIL(&bgp_path->path_qhead, bgp_prefix, prefix_qnode);
   bgp_prefix->path = bgp_path;
   bgp_path->refcount++;
 }

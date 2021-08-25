@@ -35,7 +35,7 @@ typedef enum
 
 struct __attribute__((__packed__)) timer_
 {
-    CIRCLEQ_ENTRY(timer_) timer_qnode;
+    TAILQ_ENTRY(timer_) timer_qnode;
     char name[16];
     void *data; /* Misc. data */
     struct timer_ **ptimer;

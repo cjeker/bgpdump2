@@ -73,7 +73,7 @@ struct __attribute__((__packed__)) bgp_path_
   uint32_t path_id;
   uint16_t path_length;
   /* List of all prefixes per path */
-  CIRCLEQ_HEAD(bgp_path_head_, bgp_prefix_ ) path_qhead;
+  TAILQ_HEAD(bgp_path_head_, bgp_prefix_ ) path_qhead;
 };
 
 struct __attribute__((__packed__)) bgp_prefix_
@@ -85,7 +85,7 @@ struct __attribute__((__packed__)) bgp_prefix_
   uint8_t afi;
   uint32_t index;
   /* List of all prefixes per path */
-  CIRCLEQ_ENTRY(bgp_prefix_) prefix_qnode;
+  TAILQ_ENTRY(bgp_prefix_) prefix_qnode;
 };
 
 extern struct bgp_route *routes;

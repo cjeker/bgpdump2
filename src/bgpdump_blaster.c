@@ -35,7 +35,7 @@
 #include "bgpdump_blaster.h"
 
 /* Globals */
-CIRCLEQ_HEAD(timer_head_, timer_ ) timer_qhead; /* Timer root */
+TAILQ_HEAD(timer_head_, timer_ ) timer_qhead; /* Timer root */
 struct log_id_ log_id[LOG_ID_MAX];
 
 struct keyval_ log_names[] = {
@@ -486,7 +486,7 @@ bgpdump_ribwalk_cb (struct timer_ *timer)
 
 	/* prefixes */
 	prefix_index = 0;
-	CIRCLEQ_FOREACH(prefix, &bgp_path->path_qhead, prefix_qnode) {
+	TAILQ_FOREACH(prefix, &bgp_path->path_qhead, prefix_qnode) {
 	    if (session->ribwalk_prefix_index &&
 		(prefix_index < session->ribwalk_prefix_index)) {
 		prefix_index++;
@@ -824,7 +824,7 @@ timer_add (struct timer_ **ptimer, char *name, time_t sec, long nsec, void *data
 
     timer_set_expire(timer, sec, nsec);
 
-    CIRCLEQ_INSERT_TAIL(&timer_qhead, timer, timer_qnode);
+    TAILQ_INSERT_TAIL(&timer_qhead, timer, timer_qnode);
     LOG(TIMER, "Add %s timer, expire in %lld.%06lus\n", timer->name, (long long)sec, nsec/1000);
 
     timer->ptimer = ptimer;
@@ -870,7 +870,7 @@ timer_walk (void)
     struct timespec now, min, sleep, rem;
     int res;
 
-    while (!CIRCLEQ_EMPTY(&timer_qhead)) {
+    while (!TAILQ_EMPTY(&timer_qhead)) {
 
 	/*
 	 * First pass. Call into expired nodes.
@@ -880,7 +880,7 @@ timer_walk (void)
 	min.tv_sec = 0;
 	min.tv_nsec = 0;
 
-	CIRCLEQ_FOREACH(timer, &timer_qhead, timer_qnode) {
+	TAILQ_FOREACH(timer, &timer_qhead, timer_qnode) {
 
 	    LOG(TIMER_DETAIL, "Checking %s timer, expire %lld.%lu\n",
 		timer->name, (long long)timer->expire.tv_sec, timer->expire.tv_nsec);
@@ -895,7 +895,7 @@ timer_walk (void)
 		/*
 		 * We may destroy our walking point. Prefetch the next node.
 		 */
-		next_timer = CIRCLEQ_NEXT(timer, timer_qnode);
+		next_timer = TAILQ_NEXT(timer, timer_qnode);
 
 		/*
 		 * Only callback into active timers.
@@ -911,7 +911,7 @@ timer_walk (void)
 		    if (timer->ptimer) {
 			*timer->ptimer = NULL;
 		    }
-		    CIRCLEQ_REMOVE(&timer_qhead, timer, timer_qnode);
+		    TAILQ_REMOVE(&timer_qhead, timer, timer_qnode);
 		    free(timer);
 		}
 
@@ -929,7 +929,7 @@ timer_walk (void)
 	/*
 	 * Second pass. Figure out min sleep time.
 	 */
-	CIRCLEQ_FOREACH(timer, &timer_qhead, timer_qnode) {
+	TAILQ_FOREACH(timer, &timer_qhead, timer_qnode) {
 
 	    /*
 	     * First timer in the queue becomes the actal minimum.
@@ -1414,7 +1414,7 @@ bgpdump_blaster (void)
     }
     session->write_idx = 0;
 
-    CIRCLEQ_INIT(&timer_qhead); /* Init timer queue */
+    TAILQ_INIT(&timer_qhead); /* Init timer queue */
 
     /* Logging */
     log_id[NORMAL].enable = true;
