@@ -483,7 +483,7 @@ main (int argc, char **argv)
   /* default cmd */
   if (! brief && ! show && ! route_count && ! plen_dist && ! udiff &&
       ! lookup && ! peer_table_only && ! stats && ! compat_mode &&
-      ! autsiz && ! heatmap)
+      ! autsiz && ! heatmap && ! blaster && ! blaster_dump)
     show++;
 
   if (stats)
