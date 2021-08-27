@@ -880,7 +880,7 @@ timer_walk (void)
 	min.tv_sec = 0;
 	min.tv_nsec = 0;
 
-	TAILQ_FOREACH(timer, &timer_qhead, timer_qnode) {
+	TAILQ_FOREACH_SAFE(timer, &timer_qhead, timer_qnode, next_timer) {
 
 	    LOG(TIMER_DETAIL, "Checking %s timer, expire %lld.%lu\n",
 		timer->name, (long long)timer->expire.tv_sec, timer->expire.tv_nsec);
@@ -891,11 +891,6 @@ timer_walk (void)
 	    if ((timer_compare(&timer->expire, &now) == -1) && timer->cb) {
 
 		timer->expired = true;
-
-		/*
-		 * We may destroy our walking point. Prefetch the next node.
-		 */
-		next_timer = TAILQ_NEXT(timer, timer_qnode);
 
 		/*
 		 * Only callback into active timers.
@@ -913,15 +908,6 @@ timer_walk (void)
 		    }
 		    TAILQ_REMOVE(&timer_qhead, timer, timer_qnode);
 		    free(timer);
-		}
-
-		/*
-		 * End of queue ?
-		 */
-		if (next_timer != (struct timer_ *)&timer_qhead) {
-		    timer = next_timer;
-		} else {
-		    break;
 		}
 	    }
 	}
